@@ -1,8 +1,8 @@
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-def siteUrl = 'https://github.com/idonans/okandroid-share'
-def gitUrl = 'https://github.com/idonans/okandroid-share.git'
+def siteUrl = 'https://github.com/idonans/okandroid-imagepicker'
+def gitUrl = 'https://github.com/idonans/okandroid-imagepicker.git'
 group = 'com.okandroid.imagepicker'
 version = rootProject.ext.versionName
 install {
@@ -10,7 +10,7 @@ install {
         pom {
             project {
                 packaging 'aar'
-                name 'android third platform share lib'
+                name 'android image picker lib'
                 url siteUrl
                 licenses {
                     license {
