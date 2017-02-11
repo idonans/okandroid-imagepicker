@@ -18,7 +18,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    resourcePrefix 'okandroid_'
+    resourcePrefix 'okandroid_imagepicker_'
 }
 
 dependencies {
