@@ -1,0 +1,39 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        applicationId "com.sample.imagepicker"
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    signingConfigs {
+        okandroid_debug {
+            storeFile rootProject.file('debug_keystore.jks')
+            storePassword property("debug_keystore.store_password")
+            keyAlias property("debug_keystore.key_alias")
+            keyPassword property("debug_keystore.key_password")
+        }
+    }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.okandroid_debug
+            minifyEnabled false
+        }
+        release {
+            signingConfig signingConfigs.okandroid_debug
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    resourcePrefix 'sample_'
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile project(':imagepicker')
+}
