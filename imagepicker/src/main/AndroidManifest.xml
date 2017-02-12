@@ -2,5 +2,9 @@
     package="com.okandroid.imagepicker">
     <application android:allowBackup="true" android:label="@string/okandroid_app_name"
         android:supportsRtl="true">
+        <activity android:name="com.okandroid.imagepicker.app.ImagePickerActivity"
+            android:screenOrientation="portrait"
+            android:exported="false"
+            android:noHistory="true"/>
     </application>
 </manifest>

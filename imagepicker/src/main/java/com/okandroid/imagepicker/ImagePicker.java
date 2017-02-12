@@ -22,6 +22,10 @@ import java.util.List;
 
 public class ImagePicker {
 
+    public interface Params {
+        String EXTRA_IMAGE_PICKER_CLASS = "extra_image_picker_class";
+    }
+
     public static class MimeType {
         /**
          * png
