@@ -80,7 +80,7 @@ public class ImagePickerFragment extends OKAndroidFragment implements ImagePicke
         }
 
         mImagePickerContentView = new ImagePickerContentView(activity, imagePicker, images);
-        mImagePickerContent.addView(mImagePickerContent,
+        mImagePickerContent.addView(mImagePickerContentView,
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
     }
