@@ -1,6 +1,6 @@
 package com.okandroid.imagepicker;
 
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 /**
  * Created by idonans on 2017/2/11.
@@ -8,6 +8,6 @@ import android.support.annotation.NonNull;
 
 public interface ImageInfoFilter {
 
-    boolean accept(@NonNull ImageInfo info);
+    boolean accept(@Nullable ImageInfo info);
 
 }

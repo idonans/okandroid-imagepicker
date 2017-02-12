@@ -1,7 +1,13 @@
 package com.okandroid.imagepicker;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
+import android.support.v4.content.ContentResolverCompat;
+import android.support.v4.os.CancellationSignal;
+import android.text.TextUtils;
 
 /**
  * Created by idonans on 2017/2/11.
@@ -9,7 +15,7 @@ import android.provider.MediaStore;
 
 public class ImagePicker {
 
-    public static final class MimeType {
+    public static class MimeType {
         /**
          * png
          */
@@ -30,15 +36,15 @@ public class ImagePicker {
          */
         public static final String WEBP = "image/webp";
 
-        private MimeType(){
+        private MimeType() {
         }
     }
 
-    public static final class Query {
+    public static class Query {
 
         public static final Uri CONTENT_URI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
-        public static final class Columns {
+        public static class Columns {
 
             /**
              * long
@@ -124,6 +130,58 @@ public class ImagePicker {
                     IMAGE_HEIGHT
             };
 
+        }
+
+    }
+
+    public Cursor createQueryCursor(ContentResolver resolver) {
+        Uri uri = Query.CONTENT_URI;
+        String[] projection = Query.Columns.ALL;
+        String selection = null;
+        String[] selectionArgs = null;
+        String sortOrder = null;
+        CancellationSignal cancellationSignal = null;
+        return ContentResolverCompat.query(resolver, uri, projection, selection, selectionArgs, sortOrder, cancellationSignal);
+    }
+
+    public ImageInfoFilter createImageInfoFilter() {
+        return new SampleImageInfoFilter(new String[]{MimeType.JPEG, MimeType.PNG});
+    }
+
+    public static class SampleImageInfoFilter implements ImageInfoFilter {
+
+        private final String[] mMimeTypes;
+
+        public SampleImageInfoFilter(String[] mMimeTypes) {
+            this.mMimeTypes = mMimeTypes;
+        }
+
+        @Override
+        public boolean accept(@Nullable ImageInfo info) {
+            if (info == null
+                    || info.fileLength <= 0
+                    || info.width <= 0
+                    || info.height <= 0) {
+                return false;
+            }
+
+            if (mMimeTypes == null || mMimeTypes.length <= 0) {
+                return true;
+            }
+
+            String mimeType = info.mimeType;
+            for (String accept : mMimeTypes) {
+                if (TextUtils.isEmpty(accept)) {
+                    if (TextUtils.isEmpty(mimeType)) {
+                        return true;
+                    }
+                } else {
+                    if (accept.equalsIgnoreCase(mimeType)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
     }
