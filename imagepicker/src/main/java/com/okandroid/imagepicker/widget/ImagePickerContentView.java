@@ -1,7 +1,6 @@
 package com.okandroid.imagepicker.widget;
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,8 +16,6 @@ import com.okandroid.imagepicker.ImageInfo;
 import com.okandroid.imagepicker.ImagePicker;
 import com.okandroid.imagepicker.Images;
 import com.okandroid.imagepicker.R;
-
-import java.io.File;
 
 /**
  * Created by idonans on 2017/2/12.
@@ -101,7 +98,7 @@ public class ImagePickerContentView extends FrameLayout {
                 }
 
                 public void show(ImageInfo imageInfo) {
-                    mSimpleDraweeView.setImageURI(Uri.fromFile(new File(imageInfo.filePath)));
+                    mSimpleDraweeView.setImageURI("res://okandroid/" + R.drawable.okandroid_imagepicker_ic_back);
                 }
             }
 
