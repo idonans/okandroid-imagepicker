@@ -10,6 +10,8 @@ import android.support.v4.os.CancellationSignal;
 import android.text.TextUtils;
 
 import com.okandroid.boot.lang.Available;
+import com.okandroid.boot.lang.NotAvailableException;
+import com.okandroid.boot.util.AvailableUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -153,6 +155,7 @@ public class ImagePicker {
     public List<ImageInfo> parse(Cursor cursor, Available available) {
         List<ImageInfo> images = new ArrayList<>();
         try {
+            AvailableUtil.mustAvailable(available);
             if (cursor.moveToFirst()) {
                 ImageInfoFilter imageInfoFilter = createImageInfoFilter();
 
@@ -223,6 +226,8 @@ public class ImagePicker {
                         imageInfo.height = cursor.getInt(indexImageHeight);
                     }
 
+                    AvailableUtil.mustAvailable(available);
+
                     if (imageInfoFilter == null) {
                         images.add(imageInfo);
                     } else {
@@ -233,7 +238,11 @@ public class ImagePicker {
                 } while (cursor.moveToNext());
             }
         } catch (Throwable e) {
-            e.printStackTrace();
+            if (e instanceof NotAvailableException) {
+                // ignore
+            } else {
+                e.printStackTrace();
+            }
         }
         return images;
     }
