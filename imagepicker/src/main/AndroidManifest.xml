@@ -1,10 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.okandroid.imagepicker">
-    <application android:allowBackup="true" android:label="@string/okandroid_app_name"
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <application
+        android:allowBackup="true"
+        android:label="@string/okandroid_app_name"
         android:supportsRtl="true">
-        <activity android:name="com.okandroid.imagepicker.app.ImagePickerActivity"
-            android:screenOrientation="portrait"
+        <activity
+            android:name="com.okandroid.imagepicker.app.ImagePickerActivity"
             android:exported="false"
-            android:noHistory="true"/>
+            android:noHistory="true"
+            android:screenOrientation="portrait" />
     </application>
 </manifest>
