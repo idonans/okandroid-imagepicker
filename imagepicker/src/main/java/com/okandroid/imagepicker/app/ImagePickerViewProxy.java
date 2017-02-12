@@ -1,7 +1,6 @@
 package com.okandroid.imagepicker.app;
 
 import android.database.Cursor;
-import android.support.annotation.NonNull;
 
 import com.okandroid.boot.AppContext;
 import com.okandroid.boot.viewproxy.ViewProxy;
@@ -70,25 +69,8 @@ public class ImagePickerViewProxy extends ViewProxy<ImagePickerView> {
         view.hideLoadingView();
 
         if (mImages != null) {
-            showBucket(mImages, mImages.getAllBucket());
+            view.showImages(mImagePicker, mImages);
         }
-    }
-
-    public void onBucketSelected(@NonNull final Images images, @NonNull final Images.Bucket bucket) {
-        showBucket(images, bucket);
-    }
-
-    public void showBucket(@NonNull final Images images, @NonNull final Images.Bucket bucket) {
-        runAfterInit(true, new Runnable() {
-            @Override
-            public void run() {
-                ImagePickerView view = getView();
-                if (view == null) {
-                    return;
-                }
-                view.showBucket(mImagePicker, images, bucket);
-            }
-        });
     }
 
 }
