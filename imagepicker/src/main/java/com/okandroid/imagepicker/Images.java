@@ -37,6 +37,7 @@ public class Images {
                 old.cover = imageInfo;
                 old.bucketId = imageInfo.bucketId;
                 old.bucketName = imageInfo.bucketName;
+                mSubBucketsMap.put(imageInfo.bucketId, old);
             }
         }
 
