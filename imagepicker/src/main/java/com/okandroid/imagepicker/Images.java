@@ -17,6 +17,7 @@ public class Images {
     private Bucket mAllBucket;
     private HashMap<String, Bucket> mSubBucketsMap; // 以 bucket id 为 key
     private List<Bucket> mSubBuckets;
+    private List<ImageInfo> mSelectedImageInfos = new ArrayList<>();
 
     public Images(List<ImageInfo> imageInfos) {
         mAllBucket = new Bucket();
@@ -49,6 +50,38 @@ public class Images {
                 return o1.bucketName.compareToIgnoreCase(o2.bucketName);
             }
         });
+    }
+
+    public boolean isImageSelected(ImageInfo imageInfo) {
+        synchronized (mSelectedImageInfos) {
+            return mSelectedImageInfos.contains(imageInfo);
+        }
+    }
+
+    public void selectImage(ImageInfo imageInfo, boolean selected) {
+        synchronized (mSelectedImageInfos) {
+            if (mSelectedImageInfos.contains(imageInfo) == selected) {
+                return;
+            }
+
+            if (selected) {
+                mSelectedImageInfos.add(imageInfo);
+            } else {
+                mSelectedImageInfos.remove(imageInfo);
+            }
+        }
+    }
+
+    public List<ImageInfo> getSelectedImages() {
+        synchronized (mSelectedImageInfos) {
+            return new ArrayList<>(mSelectedImageInfos);
+        }
+    }
+
+    public int getSelectedImagesSize() {
+        synchronized (mSelectedImageInfos) {
+            return mSelectedImageInfos.size();
+        }
     }
 
     @NonNull

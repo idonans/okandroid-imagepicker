@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContentResolverCompat;
 import android.support.v4.os.CancellationSignal;
@@ -291,6 +292,13 @@ public class ImagePicker {
             return false;
         }
 
+    }
+
+    /**
+     * 是否可以选择，或者不选择指定图片
+     */
+    public boolean canSelectImage(@NonNull Images images, @NonNull ImageInfo imageInfo, boolean selected) {
+        return true;
     }
 
 }
