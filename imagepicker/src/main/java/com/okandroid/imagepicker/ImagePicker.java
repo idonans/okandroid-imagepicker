@@ -9,6 +9,11 @@ import android.support.v4.content.ContentResolverCompat;
 import android.support.v4.os.CancellationSignal;
 import android.text.TextUtils;
 
+import com.okandroid.boot.lang.Available;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by idonans on 2017/2/11.
  */
@@ -139,9 +144,98 @@ public class ImagePicker {
         String[] projection = Query.Columns.ALL;
         String selection = null;
         String[] selectionArgs = null;
-        String sortOrder = null;
+        String sortOrder = Query.Columns.DATE_ADDED + " desc"; // 按添加时间排序
         CancellationSignal cancellationSignal = null;
         return ContentResolverCompat.query(resolver, uri, projection, selection, selectionArgs, sortOrder, cancellationSignal);
+    }
+
+    @Nullable
+    public List<ImageInfo> parse(Cursor cursor, Available available) {
+        List<ImageInfo> images = new ArrayList<>();
+        try {
+            if (cursor.moveToFirst()) {
+                ImageInfoFilter imageInfoFilter = createImageInfoFilter();
+
+                int indexId = cursor.getColumnIndex(Query.Columns.ID);
+                int indexBucketId = cursor.getColumnIndex(Query.Columns.BUCKET_ID);
+                int indexBucketName = cursor.getColumnIndex(Query.Columns.BUCKET_DISPLAY_NAME);
+                int indexDateAdd = cursor.getColumnIndex(Query.Columns.DATE_ADDED);
+                int indexDateModified = cursor.getColumnIndex(Query.Columns.DATE_MODIFIED);
+                int indexFilePath = cursor.getColumnIndex(Query.Columns.FILE_PATH);
+                int indexLatitude = cursor.getColumnIndex(Query.Columns.LATITUDE);
+                int indexLongitude = cursor.getColumnIndex(Query.Columns.LONGITUDE);
+                int indexDateTaken = cursor.getColumnIndex(Query.Columns.DATE_TAKEN);
+                int indexDesc = cursor.getColumnIndex(Query.Columns.DESC);
+                int indexPicasaId = cursor.getColumnIndex(Query.Columns.PICASA_ID);
+                int indexOrientation = cursor.getColumnIndex(Query.Columns.ORIENTATION);
+                int indexFileSize = cursor.getColumnIndex(Query.Columns.FILE_SIZE);
+                int indexMimeType = cursor.getColumnIndex(Query.Columns.MIME_TYPE);
+                int indexImageWidth = cursor.getColumnIndex(Query.Columns.IMAGE_WIDTH);
+                int indexImageHeight = cursor.getColumnIndex(Query.Columns.IMAGE_HEIGHT);
+                do {
+                    ImageInfo imageInfo = new ImageInfo();
+                    if (indexId >= 0) {
+                        imageInfo.id = cursor.getLong(indexId);
+                    }
+                    if (indexBucketId >= 0) {
+                        imageInfo.bucketId = cursor.getString(indexBucketId);
+                    }
+                    if (indexBucketName >= 0) {
+                        imageInfo.bucketName = cursor.getString(indexBucketName);
+                    }
+                    if (indexDateAdd >= 0) {
+                        imageInfo.dateAdd = cursor.getLong(indexDateAdd);
+                    }
+                    if (indexDateModified >= 0) {
+                        imageInfo.dateLastModified = cursor.getLong(indexDateModified);
+                    }
+                    if (indexFilePath >= 0) {
+                        imageInfo.filePath = cursor.getString(indexFilePath);
+                    }
+                    if (indexLatitude >= 0) {
+                        imageInfo.latitude = cursor.getDouble(indexLatitude);
+                    }
+                    if (indexLongitude >= 0) {
+                        imageInfo.longitude = cursor.getDouble(indexLongitude);
+                    }
+                    if (indexDateTaken >= 0) {
+                        imageInfo.dateTaken = cursor.getLong(indexDateTaken);
+                    }
+                    if (indexDesc >= 0) {
+                        imageInfo.desc = cursor.getString(indexDesc);
+                    }
+                    if (indexPicasaId >= 0) {
+                        imageInfo.picasaId = cursor.getString(indexPicasaId);
+                    }
+                    if (indexOrientation >= 0) {
+                        imageInfo.orientation = cursor.getInt(indexOrientation);
+                    }
+                    if (indexFileSize >= 0) {
+                        imageInfo.fileLength = cursor.getLong(indexFileSize);
+                    }
+                    if (indexMimeType >= 0) {
+                        imageInfo.mimeType = cursor.getString(indexMimeType);
+                    }
+                    if (indexImageWidth >= 0) {
+                        imageInfo.width = cursor.getInt(indexImageWidth);
+                    }
+                    if (indexImageHeight >= 0) {
+                        imageInfo.height = cursor.getInt(indexImageHeight);
+                    }
+
+                    if (imageInfoFilter == null) {
+                        images.add(imageInfo);
+                    } else {
+                        if (imageInfoFilter.accept(imageInfo)) {
+                            images.add(imageInfo);
+                        }
+                    }
+                } while (cursor.moveToNext());
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return images;
     }
 
     public ImageInfoFilter createImageInfoFilter() {
