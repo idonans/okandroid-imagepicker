@@ -4,14 +4,17 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.okandroid.boot.util.DimenUtil;
 import com.okandroid.boot.util.ViewUtil;
 import com.okandroid.imagepicker.BackPressedHost;
 import com.okandroid.imagepicker.ImageInfo;
@@ -59,12 +62,10 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
     private Images.Bucket mCurrentBucket;
 
     private void showBucket(Images.Bucket bucket) {
-        if (mCurrentBucket == bucket) {
-            return;
-        }
+        boolean bucketChanged = mCurrentBucket != bucket;
 
         mCurrentBucket = bucket;
-        mSubContentGridView.show();
+        mSubContentGridView.show(bucketChanged);
         mSubContentBucketView.hide();
         mSubContentPagerView.hide();
     }
@@ -123,11 +124,10 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
         private TextView mAppBarTitle;
         private TextView mAppBarMore;
         private RecyclerView mRecyclerView;
+        private DataAdapter mDataAdapter;
         private View mBottomBar;
         private TextView mBottomBarSubmit;
 
-        @NonNull
-        private DataAdapter mDataAdapter;
 
         public SubContentGridView(Context context, LayoutInflater inflater, ViewGroup parent) {
             super(context, inflater, R.layout.okandroid_imagepicker_content_grid_view, parent);
@@ -149,7 +149,7 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
                 @Override
                 public void onClick(View v) {
                     if (mSubContentBucketView != null) {
-                        mSubContentBucketView.show();
+                        mSubContentBucketView.show(false);
                     }
                 }
             });
@@ -163,6 +163,7 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
                     false
             ));
             mRecyclerView.setAdapter(mDataAdapter);
+
             mBottomBarSubmit.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -183,10 +184,14 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
         }
 
         @Override
-        public void show() {
-            mRecyclerView.setAdapter(mDataAdapter);
+        public void show(boolean bucketChanged) {
+            if (bucketChanged || mRecyclerView.getAdapter() != mDataAdapter) {
+                mRecyclerView.setAdapter(mDataAdapter);
+            } else {
+                mDataAdapter.notifyDataSetChanged();
+            }
             syncBottomBarStatus();
-            super.show();
+            super.show(bucketChanged);
         }
 
         @Override
@@ -248,8 +253,8 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
 
             @Override
             public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-                ImageInfo imageInfo = mCurrentBucket.imageInfos.get(position);
-                ((GridItemViewHolder) holder).show(imageInfo);
+                ImageInfo item = mCurrentBucket.imageInfos.get(position);
+                ((GridItemViewHolder) holder).show(item);
             }
 
             @Override
@@ -267,6 +272,9 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
      */
     private class SubContentBucketView extends SubContentView {
 
+        private RecyclerView mRecyclerView;
+        private DataAdapter mDataAdapter;
+
         public SubContentBucketView(Context context, LayoutInflater inflater, ViewGroup parent) {
             super(context, inflater, R.layout.okandroid_imagepicker_content_bucket_view, parent);
             mView.setOnClickListener(new OnClickListener() {
@@ -275,6 +283,78 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
                     dismiss();
                 }
             });
+
+            mRecyclerView = ViewUtil.findViewByID(mView, R.id.bucket_recycler);
+
+            // init recycler
+            mDataAdapter = new DataAdapter();
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayout.VERTICAL, false));
+            mRecyclerView.setAdapter(mDataAdapter);
+        }
+
+        private class DataAdapter extends RecyclerView.Adapter {
+
+            private class BucketItemViewHolder extends RecyclerView.ViewHolder {
+
+                private final int BUCKET_COVER_SIZE = DimenUtil.dp2px(60);
+                private SimpleDraweeView mBucketCover;
+                private TextView mBucketName;
+                private TextView mBucketSize;
+
+                public BucketItemViewHolder(View itemView) {
+                    super(itemView);
+                    mBucketCover = ViewUtil.findViewByID(itemView, R.id.bucket_cover);
+                    mBucketName = ViewUtil.findViewByID(itemView, R.id.bucket_name);
+                    mBucketSize = ViewUtil.findViewByID(itemView, R.id.bucket_size);
+                }
+
+                public void show(final Images.Bucket bucket) {
+                    itemView.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (mCurrentBucket == bucket) {
+                                SubContentBucketView.this.dismiss();
+                                return;
+                            }
+
+                            showBucket(bucket);
+                        }
+                    });
+
+                    mBucketName.setText(bucket.bucketName);
+
+                    Uri uri = Uri.fromFile(new File(bucket.cover.filePath));
+                    ImageUtil.showImage(mBucketCover, uri, BUCKET_COVER_SIZE, BUCKET_COVER_SIZE);
+
+                    mBucketSize.setText("(" + bucket.imageInfos.size() + ")");
+                }
+
+            }
+
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View view = mLayoutInflater.inflate(R.layout.okandroid_imagepicker_content_bucket_item_view, parent, false);
+                return new BucketItemViewHolder(view);
+            }
+
+            @Override
+            public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+                Images.Bucket item = getItem(position);
+                ((BucketItemViewHolder) holder).show(item);
+            }
+
+            public Images.Bucket getItem(int position) {
+                if (position == 0) {
+                    return mImages.getAllBucket();
+                }
+                return mImages.getSubBuckets().get(position - 1);
+            }
+
+            @Override
+            public int getItemCount() {
+                return mImages.getSubBuckets().size() + 1;
+            }
+
         }
 
         public void dismiss() {
@@ -318,7 +398,7 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
             return mView.getVisibility() == View.VISIBLE;
         }
 
-        public void show() {
+        public void show(boolean bucketChanged) {
             mView.setVisibility(View.VISIBLE);
         }
 

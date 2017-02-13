@@ -3,8 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#80000000"
-    android:paddingTop="180dp">
+    android:paddingTop="150dp">
     <android.support.v7.widget.RecyclerView android:id="@+id/bucket_recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="60dp"/>
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
+        <View android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#e0e0e0"/>
+        <TextView android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ffffffff"
+            android:gravity="center"
+            android:text="取消"
+            android:textColor="#ff333333"
+            android:textSize="16sp"/>
+    </LinearLayout>
 </FrameLayout>
