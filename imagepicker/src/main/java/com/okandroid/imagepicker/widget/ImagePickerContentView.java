@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.okandroid.boot.util.ViewUtil;
+import com.okandroid.imagepicker.BackPressedHost;
 import com.okandroid.imagepicker.ImageInfo;
 import com.okandroid.imagepicker.ImagePicker;
 import com.okandroid.imagepicker.Images;
@@ -82,6 +83,18 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
         return false;
     }
 
+    private BackPressedHost mBackPressedHost;
+
+    public void setBackPressedHost(BackPressedHost backPressedHost) {
+        mBackPressedHost = backPressedHost;
+    }
+
+    private void callBackPressedHost() {
+        if (mBackPressedHost != null) {
+            mBackPressedHost.onBackPressed();
+        }
+    }
+
     public interface OnImagesSelectCompleteListener {
         void onImageSelectComplete(Images images);
     }
@@ -126,6 +139,12 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
             mBottomBar = ViewUtil.findViewByID(mView, R.id.bottom_bar);
             mBottomBarSubmit = ViewUtil.findViewByID(mView, R.id.bottom_bar_submit);
 
+            mAppBarBack.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    callBackPressedHost();
+                }
+            });
             mAppBarMore.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -262,6 +281,16 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
             if (isVisible()) {
                 hide();
             }
+        }
+
+        @Override
+        public boolean onInterceptBackPressed() {
+            if (isVisible()) {
+                dismiss();
+                return true;
+            }
+
+            return super.onInterceptBackPressed();
         }
 
     }

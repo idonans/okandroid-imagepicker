@@ -16,6 +16,7 @@ import com.okandroid.boot.lang.Log;
 import com.okandroid.boot.util.AvailableUtil;
 import com.okandroid.boot.util.IOUtil;
 import com.okandroid.boot.util.ViewUtil;
+import com.okandroid.imagepicker.BackPressedHost;
 import com.okandroid.imagepicker.ImagePicker;
 import com.okandroid.imagepicker.Images;
 import com.okandroid.imagepicker.OnBackPressedInterceptor;
@@ -26,7 +27,7 @@ import com.okandroid.imagepicker.widget.ImagePickerContentView;
  * Created by idonans on 2017/2/12.
  */
 
-public class ImagePickerFragment extends OKAndroidFragment implements ImagePickerView, OnBackPressedInterceptor {
+public class ImagePickerFragment extends OKAndroidFragment implements ImagePickerView, OnBackPressedInterceptor, BackPressedHost {
 
     private static final String TAG = "ImagePickerFragment";
 
@@ -86,6 +87,7 @@ public class ImagePickerFragment extends OKAndroidFragment implements ImagePicke
         }
 
         mImagePickerContentView = new ImagePickerContentView(activity, imagePicker, images);
+        mImagePickerContentView.setBackPressedHost(this);
         mImagePickerContentView.setOnImagesSelectCompleteListener(new ImagePickerContentView.OnImagesSelectCompleteListener() {
             @Override
             public void onImageSelectComplete(Images images) {
@@ -95,6 +97,22 @@ public class ImagePickerFragment extends OKAndroidFragment implements ImagePicke
         mImagePickerContent.addView(mImagePickerContentView,
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Activity activity = getActivity();
+        if (activity == null) {
+            Log.e(TAG + " onImageSelectComplete but activity is null");
+            return;
+        }
+
+        if (!AvailableUtil.isAvailable(activity)) {
+            Log.e(TAG + " onImageSelectComplete but activity is not available");
+            return;
+        }
+
+        activity.onBackPressed();
     }
 
     protected void onImageSelectComplete(Images images) {
