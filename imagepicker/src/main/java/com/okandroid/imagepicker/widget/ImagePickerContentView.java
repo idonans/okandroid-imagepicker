@@ -79,11 +79,23 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
         mSubContentPagerView.hide();
     }
 
+    private void requestSystemFullscreen(boolean fullscreen) {
+        if (fullscreen) {
+            SystemUtil.setFullscreenWithSystemUi(this);
+        } else {
+            SystemUtil.unsetFullscreenWithSystemUi(this);
+        }
+    }
+
     @Override
     public boolean onInterceptBackPressed() {
         if (mSubContentPagerView.onInterceptBackPressed()) {
-            // pager 视图关闭时, 刷新 grid 视图，确保选中状态一致
-            mSubContentGridView.updateSelf();
+            if (!mSubContentPagerView.isVisible()) {
+                // pager 视图关闭时, 刷新 grid 视图，确保选中状态一致
+                mSubContentGridView.updateSelf();
+                // 取消全屏
+                requestSystemFullscreen(false);
+            }
             return true;
         }
         if (mSubContentBucketView.onInterceptBackPressed()) {
@@ -551,10 +563,10 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
         private void setFullscreen(boolean fullscreen) {
             mFullscreen = fullscreen;
             if (mFullscreen) {
-                SystemUtil.setFullscreenWithSystemUi(mView);
+                requestSystemFullscreen(true);
                 hideAppBarAndBottomBar();
             } else {
-                SystemUtil.unsetFullscreenWithSystemUi(mView);
+                requestSystemFullscreen(false);
                 showAppBarAndBottomBar();
             }
         }
@@ -597,6 +609,22 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
         public void hide() {
             mPager.setAdapter(null);
             super.hide();
+        }
+
+        public void dismiss() {
+            if (isVisible()) {
+                hide();
+            }
+        }
+
+        @Override
+        public boolean onInterceptBackPressed() {
+            if (isVisible()) {
+                dismiss();
+                return true;
+            }
+
+            return super.onInterceptBackPressed();
         }
 
         private class DataAdapter extends PagerAdapter {
