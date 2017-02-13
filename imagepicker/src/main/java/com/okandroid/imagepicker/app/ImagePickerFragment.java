@@ -18,6 +18,7 @@ import com.okandroid.boot.util.IOUtil;
 import com.okandroid.boot.util.ViewUtil;
 import com.okandroid.imagepicker.ImagePicker;
 import com.okandroid.imagepicker.Images;
+import com.okandroid.imagepicker.OnBackPressedInterceptor;
 import com.okandroid.imagepicker.R;
 import com.okandroid.imagepicker.widget.ImagePickerContentView;
 
@@ -25,7 +26,7 @@ import com.okandroid.imagepicker.widget.ImagePickerContentView;
  * Created by idonans on 2017/2/12.
  */
 
-public class ImagePickerFragment extends OKAndroidFragment implements ImagePickerView {
+public class ImagePickerFragment extends OKAndroidFragment implements ImagePickerView, OnBackPressedInterceptor {
 
     private static final String TAG = "ImagePickerFragment";
 
@@ -73,6 +74,10 @@ public class ImagePickerFragment extends OKAndroidFragment implements ImagePicke
         if (!AvailableUtil.isAvailable(activity)) {
             Log.e(TAG + " showBucket but activity is not available");
             return;
+        }
+
+        if (activity instanceof ImagePickerActivity) {
+            ((ImagePickerActivity) activity).setOnBackPressedInterceptor(this);
         }
 
         if (mImagePickerContentView != null) {
@@ -155,6 +160,24 @@ public class ImagePickerFragment extends OKAndroidFragment implements ImagePicke
     public void onDestroyView() {
         IOUtil.closeQuietly(mViewProxy);
         super.onDestroyView();
+    }
+
+    @Override
+    public boolean onInterceptBackPressed() {
+        if (!AvailableUtil.isAvailable(mViewProxy)) {
+            return false;
+        }
+
+        if (mImagePickerContentView == null) {
+            return false;
+        }
+
+        if (mImagePickerContentView.onInterceptBackPressed()) {
+            return true;
+        }
+
+        // need exit tip?
+        return false;
     }
 
 }

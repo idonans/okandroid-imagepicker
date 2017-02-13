@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.okandroid.boot.app.OKAndroidActivity;
 import com.okandroid.boot.widget.ContentView;
+import com.okandroid.imagepicker.OnBackPressedInterceptor;
 import com.okandroid.imagepicker.R;
 
 /**
@@ -85,6 +86,22 @@ public class ImagePickerActivity extends OKAndroidActivity {
 
     protected Fragment createImagePickerFragment() {
         return ImagePickerFragment.newInstance(getIntent().getExtras());
+    }
+
+    private OnBackPressedInterceptor mOnBackPressedInterceptor;
+
+    public void setOnBackPressedInterceptor(OnBackPressedInterceptor onBackPressedInterceptor) {
+        mOnBackPressedInterceptor = onBackPressedInterceptor;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mOnBackPressedInterceptor != null) {
+            if (mOnBackPressedInterceptor.onInterceptBackPressed()) {
+                return;
+            }
+        }
+        super.onBackPressed();
     }
 
 }

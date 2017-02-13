@@ -16,6 +16,7 @@ import com.okandroid.boot.util.ViewUtil;
 import com.okandroid.imagepicker.ImageInfo;
 import com.okandroid.imagepicker.ImagePicker;
 import com.okandroid.imagepicker.Images;
+import com.okandroid.imagepicker.OnBackPressedInterceptor;
 import com.okandroid.imagepicker.R;
 import com.okandroid.imagepicker.util.ImageUtil;
 
@@ -25,7 +26,7 @@ import java.io.File;
  * Created by idonans on 2017/2/12.
  */
 
-public class ImagePickerContentView extends FrameLayout {
+public class ImagePickerContentView extends FrameLayout implements OnBackPressedInterceptor {
 
     @NonNull
     private final ImagePicker mImagePicker;
@@ -38,6 +39,8 @@ public class ImagePickerContentView extends FrameLayout {
     @NonNull
     private final SubContentGridView mSubContentGridView;
     @NonNull
+    private final SubContentBucketView mSubContentBucketView;
+    @NonNull
     private final SubContentPagerView mSubContentPagerView;
 
     public ImagePickerContentView(Context context, @NonNull ImagePicker imagePicker, @NonNull Images images) {
@@ -48,9 +51,11 @@ public class ImagePickerContentView extends FrameLayout {
         mLayoutInflater = LayoutInflater.from(context);
 
         mSubContentGridView = new SubContentGridView(context, mLayoutInflater, this);
+        mSubContentBucketView = new SubContentBucketView(context, mLayoutInflater, this);
         mSubContentPagerView = new SubContentPagerView(context, mLayoutInflater, this);
 
         mSubContentGridView.hide();
+        mSubContentBucketView.hide();
         mSubContentPagerView.hide();
 
         // 展示所有
@@ -66,7 +71,22 @@ public class ImagePickerContentView extends FrameLayout {
 
         mCurrentBucket = bucket;
         mSubContentGridView.show();
+        mSubContentBucketView.hide();
         mSubContentPagerView.hide();
+    }
+
+    @Override
+    public boolean onInterceptBackPressed() {
+        if (mSubContentPagerView.onInterceptBackPressed()) {
+            return true;
+        }
+        if (mSubContentBucketView.onInterceptBackPressed()) {
+            return true;
+        }
+        if (mSubContentGridView.onInterceptBackPressed()) {
+            return true;
+        }
+        return false;
     }
 
     public interface OnImagesSelectCompleteListener {
@@ -87,6 +107,9 @@ public class ImagePickerContentView extends FrameLayout {
         }
     }
 
+    /**
+     * 显示指定相册下的默认 grid 视图
+     */
     private class SubContentGridView extends SubContentView {
 
         private View mAppBar;
@@ -218,13 +241,27 @@ public class ImagePickerContentView extends FrameLayout {
         }
     }
 
+    /**
+     * 相册选择器
+     */
+    private class SubContentBucketView extends SubContentView {
+
+        public SubContentBucketView(Context context, LayoutInflater inflater, ViewGroup parent) {
+            super(context, inflater, R.layout.okandroid_imagepicker_content_grid_view, parent);
+        }
+
+    }
+
+    /**
+     * 大图模式
+     */
     private class SubContentPagerView extends SubContentView {
         public SubContentPagerView(Context context, LayoutInflater inflater, ViewGroup parent) {
             super(context, inflater, R.layout.okandroid_imagepicker_content_grid_view, parent);
         }
     }
 
-    private class SubContentView {
+    private class SubContentView implements OnBackPressedInterceptor {
         public final View mView;
         public final Context mContext;
 
@@ -245,6 +282,12 @@ public class ImagePickerContentView extends FrameLayout {
         public void hide() {
             mView.setVisibility(View.GONE);
         }
+
+        @Override
+        public boolean onInterceptBackPressed() {
+            return false;
+        }
+
     }
 
 }
