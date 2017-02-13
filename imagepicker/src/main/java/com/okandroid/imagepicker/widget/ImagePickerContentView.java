@@ -43,11 +43,23 @@ public class ImagePickerContentView extends FrameLayout {
         mSubContentGridView = new SubContentGridView(context, mLayoutInflater, this);
         mSubContentPagerView = new SubContentPagerView(context, mLayoutInflater, this);
 
-        mSubContentGridView.show();
+        mSubContentGridView.hide();
         mSubContentPagerView.hide();
 
         // 展示所有
-        mSubContentGridView.mDataAdapter.setBucket(images.getAllBucket());
+        showBucket(images.getAllBucket());
+    }
+
+    private Images.Bucket mCurrentBucket;
+
+    private void showBucket(Images.Bucket bucket) {
+        if (mCurrentBucket == bucket) {
+            return;
+        }
+
+        mCurrentBucket = bucket;
+        mSubContentGridView.show();
+        mSubContentPagerView.hide();
     }
 
     private class SubContentGridView extends SubContentView {
@@ -55,9 +67,10 @@ public class ImagePickerContentView extends FrameLayout {
         private View mAppBar;
         private View mAppBarBack;
         private TextView mAppBarTitle;
-        private TextView mAppBarSubmit;
+        private TextView mAppBarMore;
         private RecyclerView mRecyclerView;
         private View mBottomBar;
+        private TextView mBottomBarSubmit;
 
         @NonNull
         private DataAdapter mDataAdapter;
@@ -67,9 +80,10 @@ public class ImagePickerContentView extends FrameLayout {
             mAppBar = ViewUtil.findViewByID(mView, R.id.app_bar);
             mAppBarBack = ViewUtil.findViewByID(mAppBar, R.id.app_bar_back);
             mAppBarTitle = ViewUtil.findViewByID(mAppBar, R.id.app_bar_title);
-            mAppBarSubmit = ViewUtil.findViewByID(mAppBar, R.id.app_bar_submit);
+            mAppBarMore = ViewUtil.findViewByID(mAppBar, R.id.app_bar_more);
             mRecyclerView = ViewUtil.findViewByID(mView, R.id.grid_recycler);
             mBottomBar = ViewUtil.findViewByID(mView, R.id.bottom_bar);
+            mBottomBarSubmit = ViewUtil.findViewByID(mView, R.id.bottom_bar_submit);
 
             // init recycler
             mDataAdapter = new DataAdapter();
@@ -82,9 +96,19 @@ public class ImagePickerContentView extends FrameLayout {
             mRecyclerView.setAdapter(mDataAdapter);
         }
 
-        private class DataAdapter extends RecyclerView.Adapter {
+        @Override
+        public void show() {
+            mRecyclerView.setAdapter(mDataAdapter);
+            super.show();
+        }
 
-            private Images.Bucket mBucket;
+        @Override
+        public void hide() {
+            mRecyclerView.setAdapter(null);
+            super.hide();
+        }
+
+        private class DataAdapter extends RecyclerView.Adapter {
 
             private class GridItemViewHolder extends RecyclerView.ViewHolder {
 
@@ -102,15 +126,6 @@ public class ImagePickerContentView extends FrameLayout {
                 }
             }
 
-            public void setBucket(Images.Bucket bucket) {
-                mBucket = bucket;
-                notifyDataSetChanged();
-            }
-
-            public Images.Bucket getBucket() {
-                return mBucket;
-            }
-
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 View view = mLayoutInflater.inflate(R.layout.okandroid_imagepicker_content_grid_item_view, parent, false);
@@ -119,23 +134,23 @@ public class ImagePickerContentView extends FrameLayout {
 
             @Override
             public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-                ImageInfo imageInfo = mBucket.imageInfos.get(position);
+                ImageInfo imageInfo = mCurrentBucket.imageInfos.get(position);
                 ((GridItemViewHolder) holder).show(imageInfo);
             }
 
             @Override
             public int getItemCount() {
-                if (mBucket == null) {
+                if (mCurrentBucket == null) {
                     return 0;
                 }
-                return mBucket.imageInfos.size();
+                return mCurrentBucket.imageInfos.size();
             }
         }
     }
 
     private class SubContentPagerView extends SubContentView {
         public SubContentPagerView(Context context, LayoutInflater inflater, ViewGroup parent) {
-            super(context, inflater, R.layout.okandroid_imagepicker_content_pager_view, parent);
+            super(context, inflater, R.layout.okandroid_imagepicker_content_grid_view, parent);
         }
     }
 
