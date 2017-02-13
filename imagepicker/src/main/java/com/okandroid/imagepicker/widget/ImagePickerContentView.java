@@ -673,7 +673,7 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
 
             @Override
             public void destroyItem(ViewGroup container, int position, Object object) {
-                super.destroyItem(container, position, object);
+                container.removeView((View) object);
             }
 
         }
