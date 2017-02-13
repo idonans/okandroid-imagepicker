@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#08000000"
+    android:paddingTop="180dp">
+    <android.support.v7.widget.RecyclerView android:id="@+id/bucket_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</FrameLayout>

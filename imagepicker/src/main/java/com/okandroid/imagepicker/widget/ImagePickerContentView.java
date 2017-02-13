@@ -28,19 +28,12 @@ import java.io.File;
 
 public class ImagePickerContentView extends FrameLayout implements OnBackPressedInterceptor {
 
-    @NonNull
     private final ImagePicker mImagePicker;
-    @NonNull
     private final ImagePicker.ImageSizePreviewInfo mImageSizePreviewInfo;
-    @NonNull
     private final Images mImages;
-    @NonNull
     private final LayoutInflater mLayoutInflater;
-    @NonNull
     private final SubContentGridView mSubContentGridView;
-    @NonNull
     private final SubContentBucketView mSubContentBucketView;
-    @NonNull
     private final SubContentPagerView mSubContentPagerView;
 
     public ImagePickerContentView(Context context, @NonNull ImagePicker imagePicker, @NonNull Images images) {
@@ -132,6 +125,15 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
             mRecyclerView = ViewUtil.findViewByID(mView, R.id.grid_recycler);
             mBottomBar = ViewUtil.findViewByID(mView, R.id.bottom_bar);
             mBottomBarSubmit = ViewUtil.findViewByID(mView, R.id.bottom_bar_submit);
+
+            mAppBarMore.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mSubContentBucketView != null) {
+                        mSubContentBucketView.show();
+                    }
+                }
+            });
 
             // init recycler
             mDataAdapter = new DataAdapter();
@@ -247,7 +249,19 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
     private class SubContentBucketView extends SubContentView {
 
         public SubContentBucketView(Context context, LayoutInflater inflater, ViewGroup parent) {
-            super(context, inflater, R.layout.okandroid_imagepicker_content_grid_view, parent);
+            super(context, inflater, R.layout.okandroid_imagepicker_content_bucket_view, parent);
+            mView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dismiss();
+                }
+            });
+        }
+
+        public void dismiss() {
+            if (isVisible()) {
+                hide();
+            }
         }
 
     }
@@ -271,7 +285,7 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
             parent.addView(mView);
         }
 
-        public boolean isVisibile() {
+        public boolean isVisible() {
             return mView.getVisibility() == View.VISIBLE;
         }
 
