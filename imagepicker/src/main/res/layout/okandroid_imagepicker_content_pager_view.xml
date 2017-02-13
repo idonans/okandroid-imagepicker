@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ff000000">
+    <com.okandroid.imagepicker.widget.FixViewPager android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <RelativeLayout android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:background="#ff000000"
+        android:clickable="true"
+        android:paddingTop="24dp">
+        <TextView android:id="@+id/app_bar_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="false"
+            android:drawableLeft="@drawable/okandroid_imagepicker_ic_back"
+            android:drawablePadding="3dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="返回"
+            android:textColor="#ffffffff"
+            android:textSize="14sp"/>
+        <ImageView android:id="@+id/app_bar_select_flag"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:clickable="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/okandroid_imagepicker_ic_image_select_selector"/>
+    </RelativeLayout>
+    <RelativeLayout android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom"
+        android:background="#ffffffff"
+        android:clickable="true">
+        <TextView android:id="@+id/bottom_bar_submit"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="完成 (3)"
+            android:textColor="@color/okandroid_imagepicker_pick_red_color_selector"
+            android:textSize="16sp"/>
+    </RelativeLayout>
+</FrameLayout>

@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.okandroid.boot.util.DimenUtil;
+import com.okandroid.boot.util.SystemUtil;
 import com.okandroid.boot.util.ViewUtil;
 import com.okandroid.imagepicker.BackPressedHost;
 import com.okandroid.imagepicker.ImageInfo;
@@ -28,6 +31,9 @@ import com.okandroid.imagepicker.R;
 import com.okandroid.imagepicker.util.ImageUtil;
 
 import java.io.File;
+
+import me.relex.photodraweeview.OnPhotoTapListener;
+import me.relex.photodraweeview.PhotoDraweeView;
 
 /**
  * Created by idonans on 2017/2/12.
@@ -76,6 +82,8 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
     @Override
     public boolean onInterceptBackPressed() {
         if (mSubContentPagerView.onInterceptBackPressed()) {
+            // pager 视图关闭时, 刷新 grid 视图，确保选中状态一致
+            mSubContentGridView.updateSelf();
             return true;
         }
         if (mSubContentBucketView.onInterceptBackPressed()) {
@@ -175,6 +183,13 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
             });
         }
 
+        @Override
+        public void updateSelf() {
+            super.updateSelf();
+            mDataAdapter.notifyDataSetChanged();
+            syncBottomBarStatus();
+        }
+
         private void syncBottomBarStatus() {
             int size = mImages.getSelectedImagesSize();
             if (size > 0) {
@@ -219,6 +234,16 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
                 }
 
                 public void show(final ImageInfo imageInfo) {
+                    mItemView.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            int adapterPosition = getAdapterPosition();
+                            if (adapterPosition >= 0) {
+                                mSubContentPagerView.show(false, adapterPosition);
+                            }
+                        }
+                    });
+
                     Uri uri = Uri.fromFile(new File(imageInfo.filePath));
                     ImageUtil.showImage(mSimpleDraweeView,
                             uri,
@@ -439,9 +464,192 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
      * 大图模式
      */
     private class SubContentPagerView extends SubContentView {
+
+        private boolean mFullscreen;
+
+        private ViewPager mPager;
+        private DataAdapter mDataAdapter;
+
+        private ViewGroup mAppBar;
+        private View mAppBarBack;
+        private View mAppBarSelectFlag;
+        private View mBottomBar;
+        private TextView mBottomBarSubmit;
+
         public SubContentPagerView(Context context, LayoutInflater inflater, ViewGroup parent) {
-            super(context, inflater, R.layout.okandroid_imagepicker_content_grid_view, parent);
+            super(context, inflater, R.layout.okandroid_imagepicker_content_pager_view, parent);
+            mPager = ViewUtil.findViewByID(mView, R.id.pager);
+            mAppBar = ViewUtil.findViewByID(mView, R.id.app_bar);
+            mAppBarBack = ViewUtil.findViewByID(mAppBar, R.id.app_bar_back);
+            mAppBarSelectFlag = ViewUtil.findViewByID(mAppBar, R.id.app_bar_select_flag);
+            mBottomBar = ViewUtil.findViewByID(mView, R.id.bottom_bar);
+            mBottomBarSubmit = ViewUtil.findViewByID(mView, R.id.bottom_bar_submit);
+
+            mBottomBarSubmit.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    tryFinishSelect();
+                }
+            });
+
+            mDataAdapter = new DataAdapter();
+            mPager.setAdapter(mDataAdapter);
+            mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    boolean selected = mDataAdapter.isItemSelected(position);
+                    mAppBarSelectFlag.setSelected(selected);
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+                }
+            });
+
+            mAppBarSelectFlag.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = mPager.getCurrentItem();
+                    if (position < 0) {
+                        return;
+                    }
+                    if (mPager.getAdapter() == null) {
+                        return;
+                    }
+                    int count = mDataAdapter.getCount();
+                    if (position >= count) {
+                        return;
+                    }
+                    ImageInfo imageInfo = mDataAdapter.getItem(position);
+
+                    if (mAppBarSelectFlag.isSelected()) {
+                        // 从选中到未选中
+                        if (mImagePicker.canSelectImage(mImages, imageInfo, false)) {
+                            mImages.selectImage(imageInfo, false);
+                            mAppBarSelectFlag.setSelected(false);
+                        }
+                    } else {
+                        // 从未选中到选中
+                        if (mImagePicker.canSelectImage(mImages, imageInfo, true)) {
+                            mImages.selectImage(imageInfo, true);
+                            mAppBarSelectFlag.setSelected(true);
+                        }
+                    }
+                    SubContentPagerView.this.syncBottomBarStatus();
+                }
+            });
         }
+
+        private void reverseFullscreen() {
+            setFullscreen(!mFullscreen);
+        }
+
+        private void setFullscreen(boolean fullscreen) {
+            mFullscreen = fullscreen;
+            if (mFullscreen) {
+                SystemUtil.setFullscreenWithSystemUi(mView);
+                hideAppBarAndBottomBar();
+            } else {
+                SystemUtil.unsetFullscreenWithSystemUi(mView);
+                showAppBarAndBottomBar();
+            }
+        }
+
+        private void hideAppBarAndBottomBar() {
+            mAppBar.setVisibility(View.GONE);
+            mBottomBar.setVisibility(View.GONE);
+        }
+
+        private void showAppBarAndBottomBar() {
+            mAppBar.setVisibility(View.VISIBLE);
+            mBottomBar.setVisibility(View.VISIBLE);
+        }
+
+        private void syncBottomBarStatus() {
+            int size = mImages.getSelectedImagesSize();
+            if (size > 0) {
+                mBottomBarSubmit.setText("完成 (" + size + ")");
+                mBottomBarSubmit.setEnabled(true);
+            } else {
+                mBottomBarSubmit.setText("完成");
+                mBottomBarSubmit.setEnabled(false);
+            }
+        }
+
+        @Override
+        public void show(boolean bucketChanged) {
+            show(bucketChanged, 0);
+        }
+
+        public void show(boolean bucketChanged, int position) {
+            mPager.setAdapter(mDataAdapter);
+            mPager.setCurrentItem(position, false);
+            syncBottomBarStatus();
+            super.show(bucketChanged);
+            setFullscreen(true);
+        }
+
+        @Override
+        public void hide() {
+            mPager.setAdapter(null);
+            super.hide();
+        }
+
+        private class DataAdapter extends PagerAdapter {
+
+            @Override
+            public int getCount() {
+                if (mCurrentBucket == null) {
+                    return 0;
+                }
+                return mCurrentBucket.imageInfos.size();
+            }
+
+            public ImageInfo getItem(int position) {
+                return mCurrentBucket.imageInfos.get(position);
+            }
+
+            public boolean isItemSelected(int position) {
+                ImageInfo item = mCurrentBucket.imageInfos.get(position);
+                return mImages.isImageSelected(item);
+            }
+
+            @Override
+            public boolean isViewFromObject(View view, Object object) {
+                return view == object;
+            }
+
+            @Override
+            public Object instantiateItem(ViewGroup container, int position) {
+                ImageInfo item = getItem(position);
+                Uri uri = Uri.fromFile(new File(item.filePath));
+
+                View view = mLayoutInflater.inflate(R.layout.okandroid_imagepicker_content_pager_item_view, container, false);
+                PhotoDraweeView photoDraweeView = ViewUtil.findViewByID(view, R.id.photo_drawee_view);
+                photoDraweeView.setPhotoUri(uri);
+                photoDraweeView.setOnPhotoTapListener(new OnPhotoTapListener() {
+                    @Override
+                    public void onPhotoTap(View view, float x, float y) {
+                        reverseFullscreen();
+                    }
+                });
+
+                container.addView(view);
+
+                return view;
+            }
+
+            @Override
+            public void destroyItem(ViewGroup container, int position, Object object) {
+                super.destroyItem(container, position, object);
+            }
+
+        }
+
     }
 
     private class SubContentView implements OnBackPressedInterceptor {
@@ -469,6 +677,9 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
         @Override
         public boolean onInterceptBackPressed() {
             return false;
+        }
+
+        public void updateSelf() {
         }
 
     }
