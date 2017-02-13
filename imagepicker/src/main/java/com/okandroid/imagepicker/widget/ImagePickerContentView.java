@@ -602,7 +602,7 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
             mPager.setCurrentItem(position, false);
             syncBottomBarStatus();
             super.show(bucketChanged);
-            setFullscreen(true);
+            setFullscreen(false);
         }
 
         @Override
