@@ -1,6 +1,9 @@
 package com.okandroid.imagepicker.widget;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
@@ -288,7 +291,64 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
 
             // init recycler
             mDataAdapter = new DataAdapter();
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayout.VERTICAL, false));
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayout.VERTICAL, false);
+            mRecyclerView.setLayoutManager(linearLayoutManager);
+            mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+
+                private int mDividerSize = 1; // 1px
+                private int mBottomArea = DimenUtil.dp2px(20);
+                private final Paint mDividerPaint;
+
+                {
+                    mDividerPaint = new Paint();
+                    mDividerPaint.setColor(0xffe0e0e0);
+                }
+
+                @Override
+                public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                    int childCount = parent.getChildCount();
+                    if (childCount <= 0) {
+                        return;
+                    }
+
+                    int left = parent.getPaddingLeft();
+                    int right = parent.getWidth() - parent.getPaddingRight();
+
+                    for (int i = 0; i < childCount; i++) {
+                        View childView = parent.getChildAt(i);
+                        // draw divider
+                        c.drawRect(left, childView.getBottom(), right, childView.getBottom() + mDividerSize, mDividerPaint);
+                    }
+                }
+
+                @Override
+                public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                    if (parent == null || parent.getAdapter() == null) {
+                        return;
+                    }
+
+                    int count = parent.getAdapter().getItemCount();
+                    if (count <= 0) {
+                        return;
+                    }
+
+                    int position = parent.getChildAdapterPosition(view);
+
+                    if (position < 0) {
+                        return;
+                    }
+
+                    // 每个后面有分割线
+                    outRect.bottom = mDividerSize;
+
+                    // 最后一个后面额外有一定的空白区域
+                    if (position == count - 1) {
+                        outRect.bottom += mBottomArea;
+                    }
+                }
+
+            });
+
             mRecyclerView.setAdapter(mDataAdapter);
         }
 
