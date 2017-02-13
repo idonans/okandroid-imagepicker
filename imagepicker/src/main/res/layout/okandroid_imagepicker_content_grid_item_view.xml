@@ -4,9 +4,15 @@
     android:id="@+id/grid_item_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-
-    <com.facebook.drawee.view.SimpleDraweeView
-        android:id="@+id/sample_drawee_view"
+    <com.facebook.drawee.view.SimpleDraweeView android:id="@+id/sample_drawee_view"
+        android:clickable="false"
         app:layout_aspectRatio="100%"
-        app:layout_widthPercent="100%" />
+        app:layout_widthPercent="100%"/>
+    <ImageView android:id="@+id/grid_item_view_select_flag"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="top|right"
+        android:clickable="true"
+        android:scaleType="centerInside"
+        android:src="@drawable/okandroid_imagepicker_ic_image_select_selector"/>
 </android.support.percent.PercentFrameLayout>

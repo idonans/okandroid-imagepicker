@@ -1,6 +1,7 @@
 package com.okandroid.imagepicker;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -9,7 +10,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContentResolverCompat;
 import android.support.v4.os.CancellationSignal;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
 
+import com.okandroid.boot.AppContext;
 import com.okandroid.boot.lang.Available;
 import com.okandroid.boot.lang.NotAvailableException;
 import com.okandroid.boot.util.AvailableUtil;
@@ -299,6 +303,57 @@ public class ImagePicker {
      */
     public boolean canSelectImage(@NonNull Images images, @NonNull ImageInfo imageInfo, boolean selected) {
         return true;
+    }
+
+    public interface ImageSizePreviewInfo {
+        int getImageCellWidth();
+
+        int getImageCellHeight();
+
+        int getImageLargeWidth();
+
+        int getImageLargeHeight();
+    }
+
+    public ImageSizePreviewInfo createImageSizePreviewInfo() {
+        return new ImageSizePreviewInfoImpl();
+    }
+
+    public static class ImageSizePreviewInfoImpl implements ImageSizePreviewInfo {
+
+        private int mImageCellSize;
+        private int mImageLargeSize;
+
+        public ImageSizePreviewInfoImpl() {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            WindowManager windowManager = (WindowManager) AppContext.getContext().getSystemService(Context.WINDOW_SERVICE);
+            windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+            int width = Math.min(displayMetrics.widthPixels, displayMetrics.heightPixels);
+            int height = Math.max(displayMetrics.widthPixels, displayMetrics.heightPixels);
+
+            mImageCellSize = width / 3;
+            mImageLargeSize = height;
+        }
+
+        @Override
+        public int getImageCellWidth() {
+            return mImageCellSize;
+        }
+
+        @Override
+        public int getImageCellHeight() {
+            return mImageCellSize;
+        }
+
+        @Override
+        public int getImageLargeWidth() {
+            return mImageLargeSize;
+        }
+
+        @Override
+        public int getImageLargeHeight() {
+            return mImageLargeSize;
+        }
     }
 
 }

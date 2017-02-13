@@ -1,6 +1,7 @@
 package com.okandroid.imagepicker.widget;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,9 @@ import com.okandroid.imagepicker.ImageInfo;
 import com.okandroid.imagepicker.ImagePicker;
 import com.okandroid.imagepicker.Images;
 import com.okandroid.imagepicker.R;
+import com.okandroid.imagepicker.util.ImageUtil;
+
+import java.io.File;
 
 /**
  * Created by idonans on 2017/2/12.
@@ -25,6 +29,8 @@ public class ImagePickerContentView extends FrameLayout {
 
     @NonNull
     private final ImagePicker mImagePicker;
+    @NonNull
+    private final ImagePicker.ImageSizePreviewInfo mImageSizePreviewInfo;
     @NonNull
     private final Images mImages;
     @NonNull
@@ -37,6 +43,7 @@ public class ImagePickerContentView extends FrameLayout {
     public ImagePickerContentView(Context context, @NonNull ImagePicker imagePicker, @NonNull Images images) {
         super(context);
         mImagePicker = imagePicker;
+        mImageSizePreviewInfo = mImagePicker.createImageSizePreviewInfo();
         mImages = images;
         mLayoutInflater = LayoutInflater.from(context);
 
@@ -114,15 +121,41 @@ public class ImagePickerContentView extends FrameLayout {
 
                 private View mItemView;
                 private SimpleDraweeView mSimpleDraweeView;
+                private View mItemSelectFlag;
 
                 public GridItemViewHolder(View itemView) {
                     super(itemView);
                     mItemView = ViewUtil.findViewByID(itemView, R.id.grid_item_view);
                     mSimpleDraweeView = ViewUtil.findViewByID(mItemView, R.id.sample_drawee_view);
+                    mItemSelectFlag = ViewUtil.findViewByID(mItemView, R.id.grid_item_view_select_flag);
                 }
 
-                public void show(ImageInfo imageInfo) {
-                    mSimpleDraweeView.setImageURI("res://okandroid/" + R.drawable.okandroid_imagepicker_ic_back);
+                public void show(final ImageInfo imageInfo) {
+                    Uri uri = Uri.fromFile(new File(imageInfo.filePath));
+                    ImageUtil.showImage(mSimpleDraweeView,
+                            uri,
+                            mImageSizePreviewInfo.getImageCellWidth(),
+                            mImageSizePreviewInfo.getImageCellHeight());
+
+                    mItemSelectFlag.setSelected(mImages.isImageSelected(imageInfo));
+                    mItemSelectFlag.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (mItemSelectFlag.isSelected()) {
+                                // 从选中到未选中
+                                if (mImagePicker.canSelectImage(mImages, imageInfo, false)) {
+                                    mImages.selectImage(imageInfo, false);
+                                    mItemSelectFlag.setSelected(false);
+                                }
+                            } else {
+                                // 从未选中到选中
+                                if (mImagePicker.canSelectImage(mImages, imageInfo, true)) {
+                                    mImages.selectImage(imageInfo, true);
+                                    mItemSelectFlag.setSelected(true);
+                                }
+                            }
+                        }
+                    });
                 }
             }
 
