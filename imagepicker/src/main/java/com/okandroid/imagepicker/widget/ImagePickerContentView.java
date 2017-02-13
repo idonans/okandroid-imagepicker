@@ -497,6 +497,13 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
             mBottomBar = ViewUtil.findViewByID(mView, R.id.bottom_bar);
             mBottomBarSubmit = ViewUtil.findViewByID(mView, R.id.bottom_bar_submit);
 
+            mAppBarBack.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    callBackPressedHost();
+                }
+            });
+
             mBottomBarSubmit.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
