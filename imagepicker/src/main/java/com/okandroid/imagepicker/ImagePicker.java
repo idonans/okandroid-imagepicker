@@ -29,6 +29,11 @@ public class ImagePicker {
 
     public interface Params {
         String EXTRA_IMAGE_PICKER_CLASS = "extra_image_picker_class";
+
+        /**
+         * 用以返回用户选择的图片 ArrayList#String
+         */
+        String EXTRA_OUT_IMAGES = "extra_out_images";
     }
 
     public static class MimeType {
@@ -303,6 +308,13 @@ public class ImagePicker {
      */
     public boolean canSelectImage(@NonNull Images images, @NonNull ImageInfo imageInfo, boolean selected) {
         return true;
+    }
+
+    /**
+     * 是否可以完成图片选择了, 校验当前选中的图片是否符合预期, 如个数，或者尺寸
+     */
+    public boolean canFinishImageSelect(@NonNull Images images) {
+        return images.getSelectedImagesSize() > 0;
     }
 
     public interface ImageSizePreviewInfo {

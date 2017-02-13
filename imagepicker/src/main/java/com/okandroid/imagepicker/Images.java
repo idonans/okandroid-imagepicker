@@ -79,6 +79,16 @@ public class Images {
         }
     }
 
+    public ArrayList<String> getSelectedImagesPath() {
+        synchronized (mSelectedImageInfos) {
+            ArrayList<String> paths = new ArrayList<>(mSelectedImageInfos.size());
+            for (ImageInfo info : mSelectedImageInfos) {
+                paths.add(info.filePath);
+            }
+            return paths;
+        }
+    }
+
     public int getSelectedImagesSize() {
         synchronized (mSelectedImageInfos) {
             return mSelectedImageInfos.size();

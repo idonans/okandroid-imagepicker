@@ -1,6 +1,7 @@
 package com.okandroid.imagepicker.app;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -80,9 +81,35 @@ public class ImagePickerFragment extends OKAndroidFragment implements ImagePicke
         }
 
         mImagePickerContentView = new ImagePickerContentView(activity, imagePicker, images);
+        mImagePickerContentView.setOnImagesSelectCompleteListener(new ImagePickerContentView.OnImagesSelectCompleteListener() {
+            @Override
+            public void onImageSelectComplete(Images images) {
+                ImagePickerFragment.this.onImageSelectComplete(images);
+            }
+        });
         mImagePickerContent.addView(mImagePickerContentView,
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
+    }
+
+    protected void onImageSelectComplete(Images images) {
+        Activity activity = getActivity();
+        if (activity == null) {
+            Log.e(TAG + " onImageSelectComplete but activity is null");
+            return;
+        }
+
+        if (!AvailableUtil.isAvailable(activity)) {
+            Log.e(TAG + " onImageSelectComplete but activity is not available");
+            return;
+        }
+
+        if (activity instanceof ImagePickerActivity) {
+            Intent data = new Intent();
+            data.putStringArrayListExtra(ImagePicker.Params.EXTRA_OUT_IMAGES, images.getSelectedImagesPath());
+            activity.setResult(Activity.RESULT_OK, data);
+            activity.finish();
+        }
     }
 
     @Override

@@ -69,6 +69,24 @@ public class ImagePickerContentView extends FrameLayout {
         mSubContentPagerView.hide();
     }
 
+    public interface OnImagesSelectCompleteListener {
+        void onImageSelectComplete(Images images);
+    }
+
+    private OnImagesSelectCompleteListener mOnImagesSelectCompleteListener;
+
+    public void setOnImagesSelectCompleteListener(OnImagesSelectCompleteListener onImagesSelectCompleteListener) {
+        mOnImagesSelectCompleteListener = onImagesSelectCompleteListener;
+    }
+
+    private void tryFinishSelect() {
+        if (mImagePicker.canFinishImageSelect(mImages)) {
+            if (mOnImagesSelectCompleteListener != null) {
+                mOnImagesSelectCompleteListener.onImageSelectComplete(mImages);
+            }
+        }
+    }
+
     private class SubContentGridView extends SubContentView {
 
         private View mAppBar;
@@ -101,11 +119,29 @@ public class ImagePickerContentView extends FrameLayout {
                     false
             ));
             mRecyclerView.setAdapter(mDataAdapter);
+            mBottomBarSubmit.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    tryFinishSelect();
+                }
+            });
+        }
+
+        private void syncBottomBarStatus() {
+            int size = mImages.getSelectedImagesSize();
+            if (size > 0) {
+                mBottomBarSubmit.setText("完成 (" + size + ")");
+                mBottomBarSubmit.setEnabled(true);
+            } else {
+                mBottomBarSubmit.setText("完成");
+                mBottomBarSubmit.setEnabled(false);
+            }
         }
 
         @Override
         public void show() {
             mRecyclerView.setAdapter(mDataAdapter);
+            syncBottomBarStatus();
             super.show();
         }
 
@@ -154,6 +190,7 @@ public class ImagePickerContentView extends FrameLayout {
                                     mItemSelectFlag.setSelected(true);
                                 }
                             }
+                            SubContentGridView.this.syncBottomBarStatus();
                         }
                     });
                 }
