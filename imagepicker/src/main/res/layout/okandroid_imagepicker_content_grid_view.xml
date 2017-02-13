@@ -12,7 +12,7 @@
             android:layout_height="match_parent"
             android:adjustViewBounds="false"
             android:drawableLeft="@drawable/okandroid_imagepicker_ic_back"
-            android:drawablePadding="10dp"
+            android:drawablePadding="3dp"
             android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
