@@ -658,7 +658,10 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
 
                 View view = mLayoutInflater.inflate(R.layout.okandroid_imagepicker_content_pager_item_view, container, false);
                 PhotoDraweeView photoDraweeView = ViewUtil.findViewByID(view, R.id.photo_drawee_view);
-                photoDraweeView.setPhotoUri(uri);
+                ImageUtil.showImage(photoDraweeView,
+                        uri,
+                        mImageSizePreviewInfo.getImageLargeWidth(),
+                        mImageSizePreviewInfo.getImageLargeHeight());
                 photoDraweeView.setOnPhotoTapListener(new OnPhotoTapListener() {
                     @Override
                     public void onPhotoTap(View view, float x, float y) {
