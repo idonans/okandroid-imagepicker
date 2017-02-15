@@ -22,11 +22,9 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.okandroid.boot.util.DimenUtil;
 import com.okandroid.boot.util.SystemUtil;
 import com.okandroid.boot.util.ViewUtil;
-import com.okandroid.imagepicker.BackPressedHost;
 import com.okandroid.imagepicker.ImageInfo;
 import com.okandroid.imagepicker.ImagePicker;
 import com.okandroid.imagepicker.Images;
-import com.okandroid.imagepicker.OnBackPressedInterceptor;
 import com.okandroid.imagepicker.R;
 import com.okandroid.imagepicker.util.ImageUtil;
 
@@ -39,7 +37,7 @@ import me.relex.photodraweeview.PhotoDraweeView;
  * Created by idonans on 2017/2/12.
  */
 
-public class ImagePickerContentView extends FrameLayout implements OnBackPressedInterceptor {
+public class ImagePickerContentView extends FrameLayout {
 
     private final ImagePicker mImagePicker;
     private final ImagePicker.ImageSizePreviewInfo mImageSizePreviewInfo;
@@ -87,9 +85,8 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
         }
     }
 
-    @Override
-    public boolean onInterceptBackPressed() {
-        if (mSubContentPagerView.onInterceptBackPressed()) {
+    public boolean onBackPressed() {
+        if (mSubContentPagerView.onBackPressed()) {
             if (!mSubContentPagerView.isVisible()) {
                 // pager 视图关闭时, 刷新 grid 视图，确保选中状态一致
                 mSubContentGridView.updateSelf();
@@ -98,24 +95,28 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
             }
             return true;
         }
-        if (mSubContentBucketView.onInterceptBackPressed()) {
+        if (mSubContentBucketView.onBackPressed()) {
             return true;
         }
-        if (mSubContentGridView.onInterceptBackPressed()) {
+        if (mSubContentGridView.onBackPressed()) {
             return true;
         }
         return false;
     }
 
-    private BackPressedHost mBackPressedHost;
-
-    public void setBackPressedHost(BackPressedHost backPressedHost) {
-        mBackPressedHost = backPressedHost;
+    public interface OnBackPressedHost {
+        void callActivityOnBackPressed();
     }
 
-    private void callBackPressedHost() {
-        if (mBackPressedHost != null) {
-            mBackPressedHost.onBackPressed();
+    private OnBackPressedHost mOnBackPressedHost;
+
+    public void setOnBackPressedHost(OnBackPressedHost onBackPressedHost) {
+        mOnBackPressedHost = onBackPressedHost;
+    }
+
+    private void callOnBackPressedHost() {
+        if (mOnBackPressedHost != null) {
+            mOnBackPressedHost.callActivityOnBackPressed();
         }
     }
 
@@ -165,7 +166,7 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
             mAppBarBack.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    callBackPressedHost();
+                    callOnBackPressedHost();
                 }
             });
             mAppBarMore.setOnClickListener(new OnClickListener() {
@@ -461,13 +462,13 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
         }
 
         @Override
-        public boolean onInterceptBackPressed() {
+        public boolean onBackPressed() {
             if (isVisible()) {
                 dismiss();
                 return true;
             }
 
-            return super.onInterceptBackPressed();
+            return super.onBackPressed();
         }
 
     }
@@ -500,7 +501,7 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
             mAppBarBack.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    callBackPressedHost();
+                    callOnBackPressedHost();
                 }
             });
 
@@ -625,13 +626,13 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
         }
 
         @Override
-        public boolean onInterceptBackPressed() {
+        public boolean onBackPressed() {
             if (isVisible()) {
                 dismiss();
                 return true;
             }
 
-            return super.onInterceptBackPressed();
+            return super.onBackPressed();
         }
 
         private class DataAdapter extends PagerAdapter {
@@ -690,7 +691,7 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
 
     }
 
-    private class SubContentView implements OnBackPressedInterceptor {
+    private class SubContentView {
         public final View mView;
         public final Context mContext;
 
@@ -712,8 +713,7 @@ public class ImagePickerContentView extends FrameLayout implements OnBackPressed
             mView.setVisibility(View.GONE);
         }
 
-        @Override
-        public boolean onInterceptBackPressed() {
+        public boolean onBackPressed() {
             return false;
         }
 

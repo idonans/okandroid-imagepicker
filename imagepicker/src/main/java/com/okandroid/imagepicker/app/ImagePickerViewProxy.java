@@ -3,7 +3,7 @@ package com.okandroid.imagepicker.app;
 import android.database.Cursor;
 
 import com.okandroid.boot.AppContext;
-import com.okandroid.boot.viewproxy.ViewProxy;
+import com.okandroid.boot.app.ext.preload.PreloadViewProxy;
 import com.okandroid.imagepicker.ImageInfo;
 import com.okandroid.imagepicker.ImagePicker;
 import com.okandroid.imagepicker.Images;
@@ -14,19 +14,17 @@ import java.util.List;
  * Created by idonans on 2017/2/12.
  */
 
-public class ImagePickerViewProxy extends ViewProxy<ImagePickerView> {
+public class ImagePickerViewProxy extends PreloadViewProxy<ImagePickerView> {
+
+    private ImagePicker mImagePicker;
+    private Images mImages;
 
     public ImagePickerViewProxy(ImagePickerView imagePickerView) {
         super(imagePickerView);
     }
 
-    private ImagePicker mImagePicker;
-    private Images mImages;
-
     @Override
-    protected void onInitBackground() {
-        super.onInitBackground();
-
+    protected void onPreDataLoadBackground() {
         ImagePickerView view = getView();
         if (view == null) {
             return;
@@ -50,23 +48,17 @@ public class ImagePickerViewProxy extends ViewProxy<ImagePickerView> {
     }
 
     @Override
-    protected void onLoading() {
+    public void onPrepared() {
+        super.onPrepared();
+
+        if (!isPrepared()) {
+            return;
+        }
+
         ImagePickerView view = getView();
         if (view == null) {
             return;
         }
-
-        view.showLoadingView();
-    }
-
-    @Override
-    protected void onStart() {
-        ImagePickerView view = getView();
-        if (view == null) {
-            return;
-        }
-
-        view.hideLoadingView();
 
         if (mImages != null) {
             view.showImages(mImagePicker, mImages);
