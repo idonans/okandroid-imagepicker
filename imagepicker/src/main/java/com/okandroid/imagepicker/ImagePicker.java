@@ -261,6 +261,10 @@ public class ImagePicker {
         return images;
     }
 
+    public Images createImages(List<ImageInfo> imageInfos) {
+        return new Images(imageInfos);
+    }
+
     public ImageInfoFilter createImageInfoFilter() {
         return new SampleImageInfoFilter(new String[]{MimeType.JPEG, MimeType.PNG});
     }

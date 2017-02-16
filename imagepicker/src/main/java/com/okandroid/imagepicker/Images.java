@@ -14,10 +14,10 @@ import java.util.List;
 
 public class Images {
 
-    private Bucket mAllBucket;
-    private HashMap<String, Bucket> mSubBucketsMap; // 以 bucket id 为 key
-    private List<Bucket> mSubBuckets;
-    private List<ImageInfo> mSelectedImageInfos = new ArrayList<>();
+    protected Bucket mAllBucket;
+    protected HashMap<String, Bucket> mSubBucketsMap; // 以 bucket id 为 key
+    protected List<Bucket> mSubBuckets;
+    protected List<ImageInfo> mSelectedImageInfos = new ArrayList<>();
 
     public Images(List<ImageInfo> imageInfos) {
         mAllBucket = new Bucket();

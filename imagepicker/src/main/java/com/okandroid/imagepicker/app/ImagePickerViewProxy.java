@@ -39,7 +39,7 @@ public class ImagePickerViewProxy extends PreloadViewProxy<ImagePickerView> {
         }
 
         if (imageInfos != null && imageInfos.size() > 0) {
-            mImages = new Images(imageInfos);
+            mImages = mImagePicker.createImages(imageInfos);
         }
     }
 
