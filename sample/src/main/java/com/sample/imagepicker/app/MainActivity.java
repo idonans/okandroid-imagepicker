@@ -38,7 +38,9 @@ public class MainActivity extends OKAndroidActivity {
     }
 
     private void test() {
-        startActivityForResult(ImagePickerActivity.start(this, null), REQUEST_CODE_IMAGE_PICK);
+        Bundle args = new Bundle();
+        args.putString(ImagePicker.Params.EXTRA_IMAGE_PICKER_CLASS, ImagePickerImpl.class.getName());
+        startActivityForResult(ImagePickerActivity.start(this, args), REQUEST_CODE_IMAGE_PICK);
     }
 
     @Override

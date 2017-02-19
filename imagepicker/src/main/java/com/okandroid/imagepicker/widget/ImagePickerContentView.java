@@ -267,20 +267,13 @@ public class ImagePickerContentView extends FrameLayout {
                     mItemSelectFlag.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (mItemSelectFlag.isSelected()) {
-                                // 从选中到未选中
-                                if (mImagePicker.canSelectImage(mImages, imageInfo, false)) {
-                                    mImages.selectImage(imageInfo, false);
-                                    mItemSelectFlag.setSelected(false);
-                                }
-                            } else {
-                                // 从未选中到选中
-                                if (mImagePicker.canSelectImage(mImages, imageInfo, true)) {
-                                    mImages.selectImage(imageInfo, true);
-                                    mItemSelectFlag.setSelected(true);
-                                }
+                            boolean currentSelected = mItemSelectFlag.isSelected();
+                            if (mImagePicker.canSelectImage(mImages, imageInfo, !currentSelected)) {
+                                mImages.selectImage(imageInfo, !currentSelected);
+
+                                SubContentGridView.this.syncBottomBarStatus();
+                                notifyDataSetChanged();
                             }
-                            SubContentGridView.this.syncBottomBarStatus();
                         }
                     });
                 }
@@ -546,20 +539,13 @@ public class ImagePickerContentView extends FrameLayout {
                     }
                     ImageInfo imageInfo = mDataAdapter.getItem(position);
 
-                    if (mAppBarSelectFlag.isSelected()) {
-                        // 从选中到未选中
-                        if (mImagePicker.canSelectImage(mImages, imageInfo, false)) {
-                            mImages.selectImage(imageInfo, false);
-                            mAppBarSelectFlag.setSelected(false);
-                        }
-                    } else {
-                        // 从未选中到选中
-                        if (mImagePicker.canSelectImage(mImages, imageInfo, true)) {
-                            mImages.selectImage(imageInfo, true);
-                            mAppBarSelectFlag.setSelected(true);
-                        }
+                    boolean currentSelected = mAppBarSelectFlag.isSelected();
+                    if (mImagePicker.canSelectImage(mImages, imageInfo, !currentSelected)) {
+                        mImages.selectImage(imageInfo, !currentSelected);
+
+                        SubContentPagerView.this.syncBottomBarStatus();
+                        mAppBarSelectFlag.setSelected(mDataAdapter.isItemSelected(position));
                     }
-                    SubContentPagerView.this.syncBottomBarStatus();
                 }
             });
         }
