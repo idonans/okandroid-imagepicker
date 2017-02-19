@@ -28,7 +28,7 @@ public class ImagePickerImpl extends ImagePicker {
             super.selectImage(imageInfo, selected);
             synchronized (mSelectedImageInfos) {
                 int size = mSelectedImageInfos.size();
-                if (size > 1) {
+                if (size > 50) {
                     mSelectedImageInfos.remove(0);
                 }
             }
