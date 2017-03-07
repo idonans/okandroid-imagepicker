@@ -45,6 +45,10 @@ public class ImagePickerActivity extends PreloadActivity {
                     .commitNowAllowingStateLoss();
         }
 
+        checkPermissionAndContinue();
+    }
+
+    private void checkPermissionAndContinue() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
             onRequestPermissionsResult(REQUEST_CODE_PERMISSION_IMAGE_PICKER,
