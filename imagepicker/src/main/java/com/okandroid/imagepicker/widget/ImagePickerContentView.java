@@ -207,10 +207,8 @@ public class ImagePickerContentView extends FrameLayout {
             int size = mImages.getSelectedImagesSize();
             if (size > 0) {
                 mBottomBarSubmit.setText("完成 (" + size + ")");
-                mBottomBarSubmit.setEnabled(true);
             } else {
                 mBottomBarSubmit.setText("完成");
-                mBottomBarSubmit.setEnabled(false);
             }
         }
 
@@ -579,10 +577,8 @@ public class ImagePickerContentView extends FrameLayout {
             int size = mImages.getSelectedImagesSize();
             if (size > 0) {
                 mBottomBarSubmit.setText("完成 (" + size + ")");
-                mBottomBarSubmit.setEnabled(true);
             } else {
                 mBottomBarSubmit.setText("完成");
-                mBottomBarSubmit.setEnabled(false);
             }
         }
 

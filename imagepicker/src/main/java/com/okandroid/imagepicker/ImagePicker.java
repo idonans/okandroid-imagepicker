@@ -12,6 +12,7 @@ import android.support.v4.os.CancellationSignal;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.okandroid.boot.AppContext;
 import com.okandroid.boot.lang.Available;
@@ -318,7 +319,11 @@ public class ImagePicker {
      * 是否可以完成图片选择了, 校验当前选中的图片是否符合预期, 如个数，或者尺寸
      */
     public boolean canFinishImageSelect(@NonNull Images images) {
-        return images.getSelectedImagesSize() > 0;
+        int size = images.getSelectedImagesSize();
+        if (size < 1) {
+            Toast.makeText(AppContext.getContext(), "未选中任何图片", Toast.LENGTH_SHORT).show();
+        }
+        return size > 0;
     }
 
     public interface ImageSizePreviewInfo {
