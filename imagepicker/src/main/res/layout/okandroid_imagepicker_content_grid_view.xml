@@ -37,9 +37,9 @@
             android:layout_marginLeft="100dp"
             android:layout_marginRight="100dp"
             android:gravity="center"
-            android:text="上传图片"
             android:textColor="#ffffff"
-            android:textSize="17dp"/>
+            android:textSize="17dp"
+            tools:text="选择图片"/>
     </RelativeLayout>
     <android.support.v7.widget.RecyclerView android:id="@+id/grid_recycler"
         android:layout_width="match_parent"

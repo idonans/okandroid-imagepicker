@@ -156,6 +156,10 @@ public class ImagePicker {
 
     }
 
+    public CharSequence getTitle() {
+        return "选择图片";
+    }
+
     public Cursor createQueryCursor(ContentResolver resolver) {
         Uri uri = Query.CONTENT_URI;
         String[] projection = Query.Columns.ALL;

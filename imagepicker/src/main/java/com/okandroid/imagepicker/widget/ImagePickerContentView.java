@@ -169,6 +169,7 @@ public class ImagePickerContentView extends FrameLayout {
                     callOnBackPressedHost();
                 }
             });
+            mAppBarTitle.setText(mImagePicker.getTitle());
             mAppBarMore.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
