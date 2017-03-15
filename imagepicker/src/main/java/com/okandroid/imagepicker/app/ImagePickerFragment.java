@@ -37,16 +37,6 @@ public class ImagePickerFragment extends PreloadFragment implements ImagePickerV
         return fragment;
     }
 
-    @Override
-    protected void hidePreloadLoadingView(@NonNull Activity activity, @NonNull LayoutInflater inflater, @NonNull ViewGroup contentView) {
-
-    }
-
-    @Override
-    protected void showPreloadLoadingView(@NonNull Activity activity, @NonNull LayoutInflater inflater, @NonNull ViewGroup contentView) {
-
-    }
-
     private Content mContent;
 
     @Override
