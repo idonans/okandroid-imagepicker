@@ -181,6 +181,7 @@ public class ImagePickerContentView extends FrameLayout {
 
             // init recycler
             mDataAdapter = new DataAdapter();
+            mRecyclerView.setHasFixedSize(true);
             mRecyclerView.setLayoutManager(new GridLayoutManager(
                     context,
                     3,
