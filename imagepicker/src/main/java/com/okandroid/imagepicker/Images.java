@@ -20,8 +20,13 @@ public class Images {
     protected List<ImageInfo> mSelectedImageInfos = new ArrayList<>();
 
     public Images(List<ImageInfo> imageInfos) {
+        this(imageInfos, "所有图片");
+    }
+
+    public Images(List<ImageInfo> imageInfos, String bucketAllName) {
         mAllBucket = new Bucket();
         mAllBucket.isAll = true;
+        mAllBucket.bucketName = bucketAllName;
         mAllBucket.imageInfos = imageInfos;
         mAllBucket.cover = imageInfos.get(0);
 
