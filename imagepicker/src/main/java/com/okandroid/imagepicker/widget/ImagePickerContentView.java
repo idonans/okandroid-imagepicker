@@ -161,7 +161,7 @@ public class ImagePickerContentView extends FrameLayout {
             mAppBarMore = ViewUtil.findViewByID(mAppBar, R.id.app_bar_more);
             mRecyclerView = ViewUtil.findViewByID(mView, R.id.grid_recycler);
             mBottomBar = ViewUtil.findViewByID(mView, R.id.bottom_bar);
-            mBottomBarSubmit = ViewUtil.findViewByID(mView, R.id.bottom_bar_submit);
+            mBottomBarSubmit = ViewUtil.findViewByID(mBottomBar, R.id.bottom_bar_submit);
 
             mAppBarBack.setOnClickListener(new OnClickListener() {
                 @Override
@@ -487,7 +487,7 @@ public class ImagePickerContentView extends FrameLayout {
             mAppBarBack = ViewUtil.findViewByID(mAppBar, R.id.app_bar_back);
             mAppBarSelectFlag = ViewUtil.findViewByID(mAppBar, R.id.app_bar_select_flag);
             mBottomBar = ViewUtil.findViewByID(mView, R.id.bottom_bar);
-            mBottomBarSubmit = ViewUtil.findViewByID(mView, R.id.bottom_bar_submit);
+            mBottomBarSubmit = ViewUtil.findViewByID(mBottomBar, R.id.bottom_bar_submit);
 
             mAppBarBack.setOnClickListener(new OnClickListener() {
                 @Override
