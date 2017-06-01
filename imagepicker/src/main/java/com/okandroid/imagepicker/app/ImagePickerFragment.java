@@ -77,7 +77,7 @@ public class ImagePickerFragment extends PreloadFragment implements ImagePickerV
             mImagePickerContentView.setOnBackPressedHost(new ImagePickerContentView.OnBackPressedHost() {
                 @Override
                 public void callActivityOnBackPressed() {
-                    ImagePickerFragment.this.callActivityBackPressed();
+                    ImagePickerFragment.this.requestBackPressed();
                 }
             });
             mImagePickerContentView.setOnImagesSelectCompleteListener(new ImagePickerContentView.OnImagesSelectCompleteListener() {

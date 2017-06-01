@@ -78,11 +78,7 @@ public class ImagePickerContentView extends FrameLayout {
     }
 
     private void requestSystemFullscreen(boolean fullscreen) {
-        if (fullscreen) {
-            SystemUtil.setFullscreenWithSystemUi(this);
-        } else {
-            SystemUtil.unsetFullscreenWithSystemUi(this);
-        }
+        SystemUtil.setSystemUi(this, fullscreen, false);
     }
 
     public boolean onBackPressed() {
