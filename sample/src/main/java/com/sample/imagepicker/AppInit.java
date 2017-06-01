@@ -55,7 +55,7 @@ public class AppInit {
 
         @Override
         public int getLogLevel() {
-            return Log.DEBUG;
+            return Log.VERBOSE;
         }
 
         @Override

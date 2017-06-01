@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.okandroid.boot.AppContext;
 import com.okandroid.boot.lang.Available;
+import com.okandroid.boot.lang.Log;
 import com.okandroid.boot.lang.NotAvailableException;
 import com.okandroid.boot.util.AvailableUtil;
 
@@ -27,6 +28,8 @@ import java.util.List;
  */
 
 public class ImagePicker {
+
+    private static final String TAG = "ImagePicker";
 
     public interface Params {
         String EXTRA_IMAGE_PICKER_CLASS = "extra_image_picker_class";
@@ -252,6 +255,8 @@ public class ImagePicker {
                     } else {
                         if (imageInfoFilter.accept(imageInfo)) {
                             images.add(imageInfo);
+                        } else {
+                            Log.v(TAG, "ignore imageInfo path:", imageInfo == null ? "image info is null" : imageInfo.filePath);
                         }
                     }
                 } while (cursor.moveToNext());
@@ -285,9 +290,7 @@ public class ImagePicker {
         @Override
         public boolean accept(@Nullable ImageInfo info) {
             if (info == null
-                    || info.fileLength <= 0
-                    || info.width <= 0
-                    || info.height <= 0) {
+                    || TextUtils.isEmpty(info.filePath)) {
                 return false;
             }
 
