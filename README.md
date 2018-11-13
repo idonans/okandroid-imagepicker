@@ -1,4 +1,5 @@
-# okandroid-imagepicker
+# *Deprecated*
+# ~~okandroid-imagepicker~~
 android image picker
 
 # how to use
